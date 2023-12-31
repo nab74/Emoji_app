@@ -32,8 +32,8 @@ export default function Home() {
   const user=useUser();
   const{data,isLoading}=api.post.getAll.useQuery();
   
-  //if(isLoading) return <div>Loading...</div>;
-  //if(!data)  return <div>Something went wrong</div>;
+  if(isLoading) return <div>Loading...</div>;
+  if(!data)  return <div>Something went wrong</div>;
 
   return (
     <>
