@@ -5,6 +5,10 @@ import Link from "next/link";
 
 import { RouterOutputs, api } from "~/utils/api";
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+
 const CreatePostWizard = () => {
   const {user}=useUser();
 
@@ -18,14 +22,19 @@ const CreatePostWizard = () => {
     </div>
   );
 };
-
-type PostWithUser =RouterOutputs["post"]["getAll"][number];
-
+ 
+type PostWithUser =RouterOutputs["post"]["getAll"][number]; 
+ 
 const PostView = (props: PostWithUser) =>{
   const {post,author}=props;
-  return (<div key={post.id} className="border-b border-slate-400 p-8">
-    <img src={author.profileImageUrl}/>{post.content}</div>);
-};
+  return (<div key={post.id} className="flex gap-3 border-b border-slate-400 p-8">
+    <img src={author.profileImageUrl} alt="Profile Image" className="h-14 w-14 rounded-full"/>
+    <div className="flex flex-col">
+    <div className="flex gap-1 text-slate-300"><span>{`@${author.username}`}</span>
+    <span className="font-thin">{`- ${dayjs(post.createdAt).fromNow()}`}</span></div>
+    <span>{post.content}</span></div>    
+    </div>);
+};  
 
 export default function Home() {
 

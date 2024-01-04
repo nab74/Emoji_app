@@ -29,9 +29,14 @@ export const postRouter = createTRPCRouter({
         message: "Author for post not found",
       });
 
+    console.log(author.username);
+
       return{
         post,
-        author,
+        author: {
+          ...author,
+          username: author.username,
+        },
        };   
     });
   }),
