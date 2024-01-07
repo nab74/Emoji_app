@@ -2,7 +2,7 @@ import { withClerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse} from "next/server";
 
 export default withClerkMiddleware(()=>{
-    console.log("middleware running");
+   // console.log("middleware running");
     return  NextResponse.next();
 });
 

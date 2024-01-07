@@ -1,25 +1,32 @@
 import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
 
+import Head from "next/head";
+ 
 import { RouterOutputs, api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
   const {user}=useUser();
 
+  const [input,setInput]=useState("");
+
+  const{mutate}=api.post.create.useMutation();
+ 
   console.log(user);
   if(!user) return null;
 
   return(
     <div className="flex w-full gap-4">
       <img src={user.profileImageUrl} alt="Profile Image" className="h-24 w-24 rounded-full"/>
-      <input placeholder="Type some emojis!" className="grow bg-transparent outline-none"/>
-    </div>
+      <input placeholder="Type some emojis!" className="grow bg-transparent outline-none"
+      type="text" value={input} onChange={(e)=>setInput(e.target.value)}/>
+      <button onClick={()=>mutate({content:input})}>Post</button>
+      </div>
   );
 };
  
@@ -41,7 +48,7 @@ export default function Home() {
   const user=useUser();
   const{data,isLoading}=api.post.getAll.useQuery();
   
-  if(isLoading) return <div>Loading...</div>;
+  if(isLoading) return <LoadingPage />;
   if(!data)  return <div>Something went wrong</div>;
 
   return (
@@ -57,11 +64,11 @@ export default function Home() {
           {!user.isSignedIn && (<div className="flex justify-center"><SignInButton/></div>)}
           {user.isSignedIn && <CreatePostWizard/>}
         </div>
-      <div className="flex flex-col">
-        {data?.map((fullPost)=>(<PostView{...fullPost} key={fullPost.post.id}/>))} 
+      <div className="flex flex-col">        
+        {data.map((fullPost)=>(<PostView{...fullPost} key={fullPost.post.id}/>))} 
       </div>
       </div>
       </main>
     </>
   );
-};
+}; 
