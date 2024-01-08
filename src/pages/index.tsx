@@ -20,7 +20,7 @@ const ctx=api.useContext();
   const{mutate,isLoading: isPosting}=api.post.create.useMutation({
     onSuccess: () => {
       setInput("");
-      ctx.post.getAll.invalidate();
+      void ctx.post.getAll.invalidate();
     }
   });
   
