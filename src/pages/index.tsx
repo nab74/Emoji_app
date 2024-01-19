@@ -6,9 +6,10 @@ import { RouterOutputs, api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { LoadingPage } from "~/components/loading";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
 dayjs.extend(relativeTime);
+import toast from "react-hot-toast";
 
 const CreatePostWizard = () => {
   const {user}=useUser();
@@ -21,7 +22,15 @@ const ctx=api.useContext();
     onSuccess: () => {
       setInput("");
       void ctx.post.getAll.invalidate();
-    }
+    },
+    onError: (e)=>{
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if(errorMessage && errorMessage[0]){
+        toast.error(errorMessage[0]);
+      }else{
+      toast.error("Failed to post! Try again later.");
+      }
+    },
   });
   
 
@@ -31,10 +40,33 @@ const ctx=api.useContext();
   return(
     <div className="flex w-full gap-4">
       <img src={user.profileImageUrl} alt="Profile Image" className="h-24 w-24 rounded-full"/>
-      <input placeholder="Type some emojis!" className="grow bg-transparent outline-none"
-      type="text" value={input} onChange={(e)=>setInput(e.target.value)}
-      disabled={isPosting}/>
-      <button onClick={()=>mutate({content:input})}>Post</button>
+      <input 
+      placeholder="Type some emojis!" 
+      className="grow bg-transparent outline-none"
+      type="text"
+      value={input} 
+      onChange={(e)=>setInput(e.target.value)}
+      onKeyDown={(e)=>{
+        if (e.key === "Enter"){
+        e.preventDefault();
+        if (input !== ""){
+          mutate({content: input});
+        }
+      }
+    }}
+      disabled={isPosting}
+      />
+      {input !== "" && !isPosting && (
+        <button onClick={()=>mutate({content:input})}
+         disabled={isPosting}>
+        Post</button>
+      )}
+      {
+        isPosting && (
+          <div className="flex items-center justify-center">
+            <LoadingSpinner />
+            </div>
+        )}
       </div>
   );
 };
