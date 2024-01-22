@@ -33,8 +33,6 @@ const ctx=api.useContext();
     },
   });
   
-
-  console.log(user);
   if(!user) return null;
 
   return(
